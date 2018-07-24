@@ -21,7 +21,7 @@
 #include <openrct2/actions/BannerSetNameAction.hpp>
 
 #define WW 113
-#define WH 96
+#define WH 120
 
 // clang-format off
 enum WINDOW_BANNER_WIDGET_IDX {
@@ -31,6 +31,7 @@ enum WINDOW_BANNER_WIDGET_IDX {
     WIDX_VIEWPORT,
     WIDX_BANNER_TEXT,
     WIDX_BANNER_NO_ENTRY,
+    WIDX_BANNER_NO_STAFF_ENTRY,
     WIDX_BANNER_DEMOLISH,
     WIDX_MAIN_COLOUR,
     WIDX_TEXT_COLOUR_DROPDOWN,
@@ -61,7 +62,8 @@ static rct_widget window_banner_widgets[] = {
     { WWT_VIEWPORT,         1,  3,          WW - 26,17,     WH - 20,    0x0FFFFFFFE,                STR_NONE},                          // tab content panel
     { WWT_FLATBTN,          1,  WW - 25,    WW - 2, 19,     42,         SPR_RENAME,                 STR_CHANGE_BANNER_TEXT_TIP},        // change banner button
     { WWT_FLATBTN,          1,  WW - 25,    WW - 2, 43,     66,         SPR_NO_ENTRY,               STR_SET_AS_NO_ENTRY_BANNER_TIP},    // no entry button
-    { WWT_FLATBTN,          1,  WW - 25,    WW - 2, 67,     90,         SPR_DEMOLISH,               STR_DEMOLISH_BANNER_TIP},           // demolish button
+    { WWT_FLATBTN,          1,  WW - 25,    WW - 2, 67,     90,         SPR_NO_ENTRY,               STR_SET_AS_NO_ENTRY_BANNER_TIP},    // no staff entry
+    { WWT_FLATBTN,          1,  WW - 25,    WW - 2, 91,     114,        SPR_DEMOLISH,               STR_DEMOLISH_BANNER_TIP},           // demolish button
     { WWT_COLOURBTN,        1,  5,          16,     WH - 16,WH - 5,     0xFFFFFFFF,                 STR_SELECT_MAIN_SIGN_COLOUR_TIP},   // high money
     { WWT_DROPDOWN,         1,  43,         81,     WH - 16,WH - 5,     0xFFFFFFFF,                 STR_NONE},                          // high money
     { WWT_BUTTON,           1,  70,         80,     WH - 15,WH - 6,     STR_DROPDOWN_GLYPH,         STR_SELECT_TEXT_COLOUR_TIP},        // high money
@@ -129,6 +131,7 @@ rct_window * window_banner_open(rct_windownumber number)
         (1 << WIDX_CLOSE) |
         (1 << WIDX_BANNER_TEXT) |
         (1 << WIDX_BANNER_NO_ENTRY) |
+        (1 << WIDX_BANNER_NO_STAFF_ENTRY) |
         (1 << WIDX_BANNER_DEMOLISH) |
         (1 << WIDX_MAIN_COLOUR) |
         (1 << WIDX_TEXT_COLOUR_DROPDOWN) |
@@ -212,6 +215,11 @@ static void window_banner_mouseup(rct_window *w, rct_widgetindex widgetIndex)
         textinput_cancel();
         game_do_command(1, GAME_COMMAND_FLAG_APPLY, w->number, banner->colour, GAME_COMMAND_SET_BANNER_STYLE, banner->text_colour, banner->flags ^ BANNER_FLAG_NO_ENTRY);
         break;
+    case WIDX_BANNER_NO_STAFF_ENTRY:
+        textinput_cancel();
+        game_do_command(1, GAME_COMMAND_FLAG_APPLY, w->number, banner->colour, GAME_COMMAND_SET_BANNER_STYLE, banner->text_colour, banner->flags ^ BANNER_FLAG_NO_STAFF_ENTRY);
+        break;
+
     }
 }
 
@@ -314,6 +322,14 @@ static void window_banner_invalidate(rct_window *w)
 
     if (banner->flags & BANNER_FLAG_NO_ENTRY){
         w->pressed_widgets |= (1ULL<<WIDX_BANNER_NO_ENTRY);
+        w->disabled_widgets |=
+            (1ULL<<WIDX_BANNER_TEXT)|
+            (1ULL<<WIDX_TEXT_COLOUR_DROPDOWN)|
+            (1ULL<<WIDX_TEXT_COLOUR_DROPDOWN_BUTTON);
+    }
+
+    if (banner->flags & BANNER_FLAG_NO_STAFF_ENTRY){
+        w->pressed_widgets |= (1ULL<<WIDX_BANNER_NO_STAFF_ENTRY);
         w->disabled_widgets |=
             (1ULL<<WIDX_BANNER_TEXT)|
             (1ULL<<WIDX_TEXT_COLOUR_DROPDOWN)|

@@ -2069,6 +2069,10 @@ static void window_tile_inspector_paint(rct_window *w, rct_drawpixelinfo *dpi)
                 rct_string_id noEntryStringIdx = STR_NO_ENTRY;
                 gfx_draw_string_left(dpi, STR_TILE_INSPECTOR_ENTRY_BANNER_TEXT, &noEntryStringIdx, COLOUR_DARK_GREEN, x, y);
             }
+            else if (gBanners[bannerIndex].flags & BANNER_FLAG_NO_STAFF_ENTRY) {
+                rct_string_id noEntryStringIdx = STR_NO_ENTRY;
+                gfx_draw_string_left(dpi, STR_TILE_INSPECTOR_ENTRY_BANNER_TEXT, &noEntryStringIdx, COLOUR_DARK_GREEN, x, y);
+            }
             else {
                 gfx_draw_string_left(dpi, STR_TILE_INSPECTOR_ENTRY_BANNER_TEXT, &gBanners[bannerIndex].string_idx, COLOUR_DARK_GREEN, x, y);
             }
